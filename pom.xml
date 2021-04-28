@@ -10,7 +10,7 @@
 			resources, i.e. build is platform dependent! See: https://maven.apache.org/general.html -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<opencsv.version>4.2</opencsv.version>
-		<log4j2.version>2.11.0</log4j2.version>
+		<log4j2.version>2.14.1</log4j2.version>
 		<javax.mail.version>1.4</javax.mail.version>
 		<reactome.base.version>2.1.0-SNAPSHOT</reactome.base.version>
 	</properties>
