@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
+import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.DiagramGKBReader;
 import org.gk.render.DefaultRenderConstants;
 import org.gk.render.Node;
@@ -49,6 +50,7 @@ public class DiagramDrugColorCheck extends AbstractDiagramQACheck {
 
     private void checkPathwayDiagram(GKInstance diagram, DiagramGKBReader reader, QAReport report) throws Exception {
         RenderablePathway pathway = reader.openDiagram(diagram);
+        GKInstance pathwayInst = (GKInstance) diagram.getAttributeValue(ReactomeJavaConstants.representedPathway);
         String modDate = QACheckerHelper.getLastModificationAuthor(diagram);
         List<Renderable> components = pathway.getComponents();
         if (components == null || components.size() == 0)
@@ -66,7 +68,7 @@ public class DiagramDrugColorCheck extends AbstractDiagramQACheck {
                 // Add line to report.
                 report.addLine(diagram.getDBID().toString(),
                                pathway.getDisplayName(),
-                               pathway.getReactomeDiagramId().toString(),
+                               pathwayInst.getDBID().toString(),
                                component.getDisplayName(),
                                component.getReactomeId().toString(),
                                modDate);
@@ -89,8 +91,9 @@ public class DiagramDrugColorCheck extends AbstractDiagramQACheck {
         if (component.getReactomeId() == null || instance == null)
             return true;
 
-        // Drug color check.
-        if (!InstanceUtilities.hasDrug(instance))
+        // If instance is not a drug nor has a drug, skip further color tests.
+        if (!instance.getSchemClass().isa(ReactomeJavaConstants.Drug) ||
+            !InstanceUtilities.hasDrug(instance))
             return true;
 
         // Drug background and foreground check.

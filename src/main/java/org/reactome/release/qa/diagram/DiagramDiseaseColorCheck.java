@@ -46,6 +46,7 @@ public class DiagramDiseaseColorCheck extends AbstractDiagramQACheck {
 
     private void checkPathwayDiagram(GKInstance diagram, DiagramGKBReader reader, QAReport report) throws Exception {
         RenderablePathway pathway = reader.openDiagram(diagram);
+        GKInstance pathwayInst = (GKInstance) diagram.getAttributeValue(ReactomeJavaConstants.representedPathway);
         List<Renderable> components = pathway.getComponents();
         if (components == null || components.size() == 0)
             return;
@@ -66,7 +67,7 @@ public class DiagramDiseaseColorCheck extends AbstractDiagramQACheck {
             // Otherwise, add line to report.
             report.addLine(diagram.getDBID().toString(),
                            pathway.getDisplayName(),
-                           pathway.getReactomeDiagramId().toString(),
+                           pathwayInst.getDBID().toString(),
                            component.getDisplayName(),
                            component.getReactomeId() + "",
                            modDate);
@@ -90,6 +91,12 @@ public class DiagramDiseaseColorCheck extends AbstractDiagramQACheck {
 
         GKInstance instance = dba.fetchInstance(component.getReactomeId());
         if (instance == null)
+            return true;
+
+        if (instance.getSchemClass().isa(ReactomeJavaConstants.Drug))
+            return true;
+
+        if (instance.getSchemClass().isa(ReactomeJavaConstants.Pathway))
             return true;
 
         if (!instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.disease))
